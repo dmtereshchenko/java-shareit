@@ -7,17 +7,38 @@ import java.util.Set;
 
 public interface ItemStorage {
 
+    /**
+     * сохранение вещи в хранилище
+     */
     Item create(Item item);
 
+    /**
+     * проверка наличия вещи с @param id в хранилище
+     */
     boolean exists(int id);
 
+    /**
+     * получение всех вещей из хранилища
+     */
     List<Item> getAll(int userId);
 
+    /**
+     * получение определенной вещи с @param id из хранилища
+     */
     Item get(int id);
 
+    /**
+     * обновление данных определенной вещи в хранилище
+     */
     void update(Item item);
 
+    /**
+     * поиск вещи в хранилище по ключевому слову
+     */
     Set<Item> find(String text);
 
+    /**
+     * удаление вещи с @param id из хранилища
+     */
     void delete(int id);
 }

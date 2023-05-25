@@ -23,24 +23,24 @@ public class UserController {
     }
 
     @PostMapping(value = "/users")
-    User create(@Valid @RequestBody User user, HttpServletRequest request) {
+    UserDto create(@Valid @RequestBody User user, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.create(user);
     }
 
     @PatchMapping(value = "/users/{id}")
-    User update(@Valid @RequestBody UserDto userDto, @PathVariable int id, HttpServletRequest request) {
+    UserDto update(@Valid @RequestBody UserDto userDto, @PathVariable int id, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.update(userDto, id);
     }
 
     @GetMapping(value = "/users/{id}")
-    User get(@PathVariable int id) {
+    UserDto get(@PathVariable int id) {
         return service.get(id);
     }
 
     @GetMapping(value = "/users")
-    List<User> getAll() {
+    List<UserDto> getAll() {
         return service.getAll();
     }
 

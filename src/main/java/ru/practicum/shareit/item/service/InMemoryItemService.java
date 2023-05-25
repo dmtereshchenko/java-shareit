@@ -10,14 +10,13 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.InMemoryItemStorage;
 import ru.practicum.shareit.user.service.UserService;
 
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 @Service
 public class InMemoryItemService implements ItemService {
 
-    private static final ItemMapper mapper = new ItemMapper();
     private final InMemoryItemStorage storage;
     private final UserService userService;
 
@@ -28,48 +27,58 @@ public class InMemoryItemService implements ItemService {
     }
 
     @Override
-    public Item create(ItemDto itemDto, int userId) {
+    public ItemDto create(ItemDto itemDto, int userId) {
         if (!userService.exists(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с таким id не существует.");
         } else if (null == itemDto.getAvailable()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Нельзя создать вещь с отсутствием доступности бронирования.");
         } else {
-            return storage.create(mapper.toItemCreate(itemDto, userService.get(userId)));
+            return ItemMapper.toDto(storage.create(ItemMapper.toItemCreate(itemDto, userId)));
         }
     }
 
     @Override
-    public Item update(ItemDto itemDto, int userId, int itemId) {
+    public ItemDto update(ItemDto itemDto, int userId, int itemId) {
         if (!userService.exists(userId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователя с таким id не существует.");
         } else if (!storage.exists(itemId)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Вещи с таким id не существует.");
-        } else if (userId != storage.get(itemId).getOwner().getId()) {
+        } else if (userId != storage.get(itemId).getOwner()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Редактировать вещь может только ее владелец.");
         } else {
             itemDto.setId(itemId);
-            Item item = mapper.toItemUpdate(itemDto, storage.get(itemId));
+            Item item = ItemMapper.toItemUpdate(itemDto, storage.get(itemId));
             storage.update(item);
-            return item;
+            return ItemMapper.toDto(item);
         }
     }
 
     @Override
-    public Item get(int id, int userId) {
-        return storage.get(id);
+    public ItemDto get(int id, int userId) {
+        return ItemMapper.toDto(storage.get(id));
     }
 
     @Override
-    public List<Item> getAll(int userId) {
-        return storage.getAll(userId);
+    public List<ItemDto> getAll(int userId) {
+        List<ItemDto> dtos = new ArrayList<>();
+        List<Item> items = storage.getAll(userId);
+        for (Item item : items) {
+            dtos.add(ItemMapper.toDto(item));
+        }
+        return dtos;
     }
 
     @Override
-    public Set<Item> find(String text) {
+    public List<ItemDto> find(String text) {
         if (text.isBlank()) {
-            return new HashSet<>();
+            return new ArrayList<>();
         } else {
-            return storage.find(text);
+            Set<Item> itemSet = storage.find(text);
+            List<ItemDto> dtos = new ArrayList<>();
+            for (Item item : itemSet) {
+                dtos.add(ItemMapper.toDto(item));
+            }
+            return dtos;
         }
     }
 

@@ -9,12 +9,11 @@ import ru.practicum.shareit.user.mapper.UserMapper;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.InMemoryUserStorage;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class InMemoryUserService implements UserService {
-
-    private static final UserMapper mapper = new UserMapper();
     private final InMemoryUserStorage storage;
 
     @Autowired
@@ -23,16 +22,16 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public User create(User user) {
+    public UserDto create(User user) {
         if (storage.validatorAdd(user.getEmail())) {
-            return storage.create(user);
+            return UserMapper.toDto(storage.create(user));
         } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователь с этим адресом электронной почты уже зарегистрирован.");
         }
     }
 
     @Override
-    public User update(UserDto userDto, int id) {
+    public UserDto update(UserDto userDto, int id) {
         if (!exists(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким Id не найден");
         } else if (storage.validatorCheck(userDto.getEmail()) && !userDto.getEmail().equals(storage.get(id).getEmail())) {
@@ -45,22 +44,27 @@ public class InMemoryUserService implements UserService {
                 storage.validatorAdd(email);
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователь с этим адресом электронной почты уже существует.");
             }
-            return user;
+            return UserMapper.toDto(user);
         }
     }
 
     @Override
-    public User get(int id) {
+    public UserDto get(int id) {
         if (exists(id)) {
-            return storage.get(id);
+            return UserMapper.toDto(storage.get(id));
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с этим идентификатором не найден.");
         }
     }
 
     @Override
-    public List<User> getAll() {
-        return storage.getAll();
+    public List<UserDto> getAll() {
+        List<User> users = storage.getAll();
+        List<UserDto> dtos = new ArrayList<>();
+        for (User user : users) {
+            dtos.add(UserMapper.toDto(user));
+        }
+        return dtos;
     }
 
     @Override

@@ -16,12 +16,12 @@ public class InMemoryItemStorage implements ItemStorage {
     public Item create(Item item) {
         item.setId(generateId());
         storage.put(itemId, item);
-        if (null == getAll(item.getOwner().getId())) {
-            usersItems.put(item.getOwner().getId(), List.of(item));
+        if (null == getAll(item.getOwner())) {
+            usersItems.put(item.getOwner(), List.of(item));
         } else {
-            List<Item> items = getAll(item.getOwner().getId());
+            List<Item> items = getAll(item.getOwner());
             items.add(item);
-            usersItems.put(item.getOwner().getId(), items);
+            usersItems.put(item.getOwner(), items);
         }
         return item;
     }
@@ -48,7 +48,7 @@ public class InMemoryItemStorage implements ItemStorage {
     @Override
     public void update(Item item) {
         storage.put(item.getId(), item);
-        List<Item> items = usersItems.get(item.getOwner().getId());
+        List<Item> items = usersItems.get(item.getOwner());
         for (Item item1 : items) {
             if (item1.getId() == item.getId()) {
                 items.remove(item1);
@@ -56,7 +56,7 @@ public class InMemoryItemStorage implements ItemStorage {
                 break;
             }
         }
-        usersItems.put(item.getOwner().getId(), items);
+        usersItems.put(item.getOwner(), items);
     }
 
     @Override
