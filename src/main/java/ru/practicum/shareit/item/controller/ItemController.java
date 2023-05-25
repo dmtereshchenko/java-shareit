@@ -15,7 +15,7 @@ import java.util.List;
 public class ItemController {
 
     private final ItemService service;
-    private final String GETID = "X-Sharer-User-Id";
+    private final String getId = "X-Sharer-User-Id";
 
     @Autowired
     public ItemController(ItemService service) {
@@ -23,25 +23,25 @@ public class ItemController {
     }
 
     @PostMapping(value = "/items")
-    ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader(GETID) int userId, HttpServletRequest request) {
+    ItemDto create(@Valid @RequestBody ItemDto itemDto, @RequestHeader(getId) int userId, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.create(itemDto, userId);
     }
 
     @PatchMapping(value = "/items/{id}")
-    ItemDto update(@RequestBody ItemDto itemDto, @RequestHeader(GETID) int userId,
+    ItemDto update(@RequestBody ItemDto itemDto, @RequestHeader(getId) int userId,
                    @PathVariable int id, HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.update(itemDto, userId, id);
     }
 
     @GetMapping(value = "/items/{id}")
-    ItemDto get(@PathVariable int id, @RequestHeader(GETID) int userId) {
+    ItemDto get(@PathVariable int id, @RequestHeader(getId) int userId) {
         return service.get(id, userId);
     }
 
     @GetMapping(value = "/items")
-    List<ItemDto> getAll(@RequestHeader(GETID) int userId) {
+    List<ItemDto> getAll(@RequestHeader(getId) int userId) {
         return service.getAll(userId);
     }
 
