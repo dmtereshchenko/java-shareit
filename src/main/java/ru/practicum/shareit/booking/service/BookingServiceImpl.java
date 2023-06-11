@@ -71,6 +71,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllByBooker(String state, long userId) throws InvalidDataException {
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
+        LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
@@ -78,14 +79,14 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findBookingsByBookerId(userId, sort);
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findBookingsByBookerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
-                        LocalDateTime.now(), sort);
+                bookings = bookingRepository.findBookingsByBookerIdAndStartIsBeforeAndEndIsAfter(userId, now,
+                        now, sort);
                 break;
             case "PAST":
-                bookings = bookingRepository.findBookingsByBookerIdAndEndIsBefore(userId, LocalDateTime.now(), sort);
+                bookings = bookingRepository.findBookingsByBookerIdAndEndIsBefore(userId, now, sort);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findBookingsByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), sort);
+                bookings = bookingRepository.findBookingsByBookerIdAndStartIsAfter(userId, now, sort);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findBookingsByBookerIdAndStatus(userId, Status.WAITING, sort);
@@ -102,6 +103,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingDto> getAllByOwner(String state, long userId) throws InvalidDataException {
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
+        LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
         Sort sort = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
@@ -109,14 +111,14 @@ public class BookingServiceImpl implements BookingService {
                 bookings = bookingRepository.findBookingsByItemOwnerId(userId, sort);
                 break;
             case "CURRENT":
-                bookings = bookingRepository.findBookingsByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId, LocalDateTime.now(),
-                        LocalDateTime.now(), sort);
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndStartIsBeforeAndEndIsAfter(userId, now,
+                        now, sort);
                 break;
             case "PAST":
-                bookings = bookingRepository.findBookingsByItemOwnerIdAndEndIsBefore(userId, LocalDateTime.now(), sort);
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndEndIsBefore(userId, now, sort);
                 break;
             case "FUTURE":
-                bookings = bookingRepository.findBookingsByItemOwnerIdAndStartIsAfter(userId, LocalDateTime.now(), sort);
+                bookings = bookingRepository.findBookingsByItemOwnerIdAndStartIsAfter(userId, now, sort);
                 break;
             case "WAITING":
                 bookings = bookingRepository.findBookingsByItemOwnerIdAndStatus(userId, Status.WAITING, sort);
