@@ -15,17 +15,17 @@ public interface ItemStorage {
     /**
      * проверка наличия вещи с @param id в хранилище
      */
-    boolean exists(int id);
+    boolean exists(long id);
 
     /**
      * получение всех вещей из хранилища
      */
-    List<Item> getAll(int userId);
+    List<Item> getAll(long userId);
 
     /**
      * получение определенной вещи с @param id из хранилища
      */
-    Item get(int id);
+    Item get(long id);
 
     /**
      * обновление данных определенной вещи в хранилище
@@ -40,5 +40,5 @@ public interface ItemStorage {
     /**
      * удаление вещи с @param id из хранилища
      */
-    void delete(int id);
+    void delete(long id);
 }

@@ -8,31 +8,31 @@ import java.util.*;
 @Component
 public class InMemoryItemStorage implements ItemStorage {
 
-    private final HashMap<Integer, Item> storage = new HashMap<>();
-    private final HashMap<Integer, List<Item>> usersItems = new HashMap<>();
-    private int itemId;
+    private final HashMap<Long, Item> storage = new HashMap<>();
+    private final HashMap<Long, List<Item>> usersItems = new HashMap<>();
+    private long itemId;
 
     @Override
     public Item create(Item item) {
         item.setId(generateId());
         storage.put(itemId, item);
-        if (null == getAll(item.getOwner())) {
-            usersItems.put(item.getOwner(), List.of(item));
+        if (null == getAll(item.getOwner().getId())) {
+            usersItems.put(item.getOwner().getId(), List.of(item));
         } else {
-            List<Item> items = getAll(item.getOwner());
+            List<Item> items = getAll(item.getOwner().getId());
             items.add(item);
-            usersItems.put(item.getOwner(), items);
+            usersItems.put(item.getOwner().getId(), items);
         }
         return item;
     }
 
     @Override
-    public boolean exists(int id) {
+    public boolean exists(long id) {
         return storage.containsKey(id);
     }
 
     @Override
-    public List<Item> getAll(int userId) {
+    public List<Item> getAll(long userId) {
         if (usersItems.containsKey(userId)) {
             return usersItems.get(userId);
         } else {
@@ -41,7 +41,7 @@ public class InMemoryItemStorage implements ItemStorage {
     }
 
     @Override
-    public Item get(int id) {
+    public Item get(long id) {
         return storage.get(id);
     }
 
@@ -56,11 +56,11 @@ public class InMemoryItemStorage implements ItemStorage {
                 break;
             }
         }
-        usersItems.put(item.getOwner(), items);
+        usersItems.put(item.getOwner().getId(), items);
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         storage.remove(id);
     }
 
@@ -78,7 +78,7 @@ public class InMemoryItemStorage implements ItemStorage {
         return items;
     }
 
-    private int generateId() {
+    private long generateId() {
         return ++itemId;
     }
 }

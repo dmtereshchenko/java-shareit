@@ -22,16 +22,17 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public UserDto create(User user) {
-        if (storage.validatorAdd(user.getEmail())) {
-            return UserMapper.toDto(storage.create(user));
+    public UserDto create(UserDto userDto) {
+        if (storage.validatorAdd(userDto.getEmail())) {
+            User user = storage.create(UserMapper.toUser(userDto));
+            return UserMapper.toDto(user);
         } else {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователь с этим адресом электронной почты уже зарегистрирован.");
         }
     }
 
     @Override
-    public UserDto update(UserDto userDto, int id) {
+    public UserDto update(UserDto userDto, long id) {
         if (!exists(id)) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Пользователь с таким Id не найден");
         } else if (storage.validatorCheck(userDto.getEmail()) && !userDto.getEmail().equals(storage.get(id).getEmail())) {
@@ -39,7 +40,7 @@ public class InMemoryUserService implements UserService {
         } else {
             String email = storage.get(id).getEmail();
             storage.validatorDelete(email);
-            User user = UserMapper.toUser(userDto, storage.get(id));
+            User user = UserMapper.toUser(userDto);
             if (!storage.update(user)) {
                 storage.validatorAdd(email);
                 throw new ResponseStatusException(HttpStatus.CONFLICT, "Пользователь с этим адресом электронной почты уже существует.");
@@ -49,7 +50,7 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public UserDto get(int id) {
+    public UserDto get(long id) {
         if (exists(id)) {
             return UserMapper.toDto(storage.get(id));
         } else {
@@ -68,12 +69,12 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         storage.delete(id);
     }
 
     @Override
-    public boolean exists(int id) {
+    public boolean exists(long id) {
         return storage.exists(id);
     }
 }
