@@ -8,9 +8,9 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private final HashMap<Integer, User> storage = new HashMap<>();
+    private final HashMap<Long, User> storage = new HashMap<>();
     private final Set<String> emailUnicalizator = new HashSet<>();
-    private int userId;
+    private long userId;
 
     @Override
     public User create(User user) {
@@ -20,7 +20,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean exists(int id) {
+    public boolean exists(long id) {
         return storage.containsKey(id);
     }
 
@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User get(int id) {
+    public User get(long id) {
         return storage.get(id);
     }
 
@@ -48,7 +48,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void delete(int id) {
+    public void delete(long id) {
         validatorDelete(get(id).getEmail());
         storage.remove(id);
     }
@@ -65,7 +65,7 @@ public class InMemoryUserStorage implements UserStorage {
         return emailUnicalizator.contains(email);
     }
 
-    private int generateId() {
+    private long generateId() {
         return ++userId;
     }
 }

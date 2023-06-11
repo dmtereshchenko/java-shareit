@@ -14,7 +14,7 @@ public interface UserStorage {
     /**
      * проверка наличия пользователя с @param id в хранилище
      */
-    boolean exists(int id);
+    boolean exists(long id);
 
     /**
      * получение всех пользователей из хранилища
@@ -24,7 +24,7 @@ public interface UserStorage {
     /**
      * получение определенного пользователя с @param id из хранилища
      */
-    User get(int id);
+    User get(long id);
 
     /**
      * обновление данных определенного пользователя в хранилище
@@ -34,5 +34,5 @@ public interface UserStorage {
     /**
      * удаление пользователя с @param id из хранилища
      */
-    void delete(int id);
+    void delete(long id);
 }
