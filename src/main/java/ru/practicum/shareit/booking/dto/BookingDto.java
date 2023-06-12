@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -24,6 +24,6 @@ public class BookingDto {
     @Future
     private final LocalDateTime end;
     private final ItemDto item;
-    private final User booker;
-    private Status status;
+    private final UserDto booker;
+    private final Status status;
 }
