@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoLong;
 import ru.practicum.shareit.item.mapper.CommentMapper;
 import ru.practicum.shareit.item.mapper.ItemMapper;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.CommentRepository;
 import ru.practicum.shareit.item.storage.ItemRepository;
@@ -30,6 +32,7 @@ import java.util.stream.Collectors;
 @Service
 @Primary
 @RequiredArgsConstructor
+@Transactional
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -70,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
         }
-        return itemDtoLong;
+        return setComments(Map.of(itemDtoLong.getId(), itemDtoLong), commentRepository.findCommentsByItemId(new ArrayList<>(List.of(item.getId())))).get(0);
     }
 
     @Override
@@ -85,7 +88,7 @@ public class ItemServiceImpl implements ItemService {
                 items.get(booking.getItem().getId()).setNextBooking(BookingMapper.toBookingDtoShort(booking));
             }
         }
-        return new ArrayList<>(items.values());
+        return setComments(items, commentRepository.findCommentsByItemId(new ArrayList<>(items.keySet())));
     }
 
     @Override
@@ -107,5 +110,12 @@ public class ItemServiceImpl implements ItemService {
         } else {
             throw new AccessDeniedException("Вы не можете оставить комментарий к этой вещи");
         }
+    }
+
+    private List<ItemDtoLong> setComments(Map<Long, ItemDtoLong> items, List<Comment> comments) {
+        for (Comment comment : comments) {
+            items.get(comment.getItem().getId()).addComment(CommentMapper.toDto(comment));
+        }
+        return new ArrayList<>(items.values());
     }
 }

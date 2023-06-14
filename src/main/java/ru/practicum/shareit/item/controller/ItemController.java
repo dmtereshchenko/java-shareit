@@ -42,17 +42,20 @@ public class ItemController {
     }
 
     @GetMapping(value = "/{itemId}")
-    ItemDtoLong get(@PathVariable long itemId, @RequestHeader(getId) long userId) {
+    ItemDtoLong get(@PathVariable long itemId, @RequestHeader(getId) long userId, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.get(itemId, userId);
     }
 
     @GetMapping()
-    List<ItemDtoLong> getAll(@RequestHeader(getId) long userId) {
+    List<ItemDtoLong> getAll(@RequestHeader(getId) long userId, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.getAll(userId);
     }
 
     @GetMapping(value = "/search")
-    List<ItemDto> find(@RequestParam String text) {
+    List<ItemDto> find(@RequestParam String text, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.find(text);
     }
 }

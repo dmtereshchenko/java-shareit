@@ -27,22 +27,26 @@ public class BookingController {
     }
 
     @PatchMapping(value = "/{bookingId}")
-    BookingDto update(@PathVariable long bookingId, @RequestParam boolean approved, @RequestHeader(getId) long userId) {
+    BookingDto update(@PathVariable long bookingId, @RequestParam boolean approved, @RequestHeader(getId) long userId, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.update(bookingId, approved, userId);
     }
 
     @GetMapping(value = "/{bookingId}")
-    BookingDto get(@PathVariable long bookingId, @RequestHeader(getId) long userId) {
+    BookingDto get(@PathVariable long bookingId, @RequestHeader(getId) long userId, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.get(bookingId, userId);
     }
 
     @GetMapping()
-    List<BookingDto> getAllByBooker(@RequestParam(defaultValue = "ALL") String state, @RequestHeader(getId) long userId) throws InvalidDataException {
+    List<BookingDto> getAllByBooker(@RequestParam(defaultValue = "ALL") String state, @RequestHeader(getId) long userId, HttpServletRequest request) throws InvalidDataException {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.getAllByBooker(state, userId);
     }
 
     @GetMapping(value = "/owner")
-    List<BookingDto> getAllByOwner(@RequestParam(defaultValue = "ALL") String state, @RequestHeader(getId) long userId) throws InvalidDataException {
+    List<BookingDto> getAllByOwner(@RequestParam(defaultValue = "ALL") String state, @RequestHeader(getId) long userId, HttpServletRequest request) throws InvalidDataException {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.getAllByOwner(state, userId);
     }
 }

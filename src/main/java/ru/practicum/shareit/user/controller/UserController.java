@@ -31,12 +31,14 @@ public class UserController {
     }
 
     @GetMapping(value = "/{id}")
-    UserDto get(@PathVariable long id) {
+    UserDto get(@PathVariable long id, HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.get(id);
     }
 
     @GetMapping()
-    List<UserDto> getAll() {
+    List<UserDto> getAll(HttpServletRequest request) {
+        log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.getAll();
     }
 

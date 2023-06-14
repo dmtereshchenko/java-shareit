@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.List;
 
 
 @Data
@@ -28,6 +27,4 @@ public class Item {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id")
     private User owner;
-    @OneToMany(mappedBy = "item")
-    private List<Comment> comments;
 }

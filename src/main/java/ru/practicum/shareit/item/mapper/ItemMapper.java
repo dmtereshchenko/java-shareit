@@ -5,7 +5,7 @@ import ru.practicum.shareit.item.dto.ItemDtoLong;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
-import java.util.stream.Collectors;
+import java.util.ArrayList;
 
 public class ItemMapper {
 
@@ -15,8 +15,7 @@ public class ItemMapper {
                 itemDto.getName(),
                 itemDto.getDescription(),
                 itemDto.getAvailable(),
-                user,
-                null
+                user
         );
     }
 
@@ -37,7 +36,7 @@ public class ItemMapper {
                 item.getAvailable(),
                 null,
                 null,
-                item.getComments().stream().map(CommentMapper::toDto).collect(Collectors.toList())
+                new ArrayList<>()
         );
     }
 }
