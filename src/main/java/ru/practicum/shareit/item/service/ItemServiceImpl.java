@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -56,6 +57,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemDtoLong get(long itemId, long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException(itemId));
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
@@ -75,8 +77,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoLong> getAll(long userId) {
-        Map<Long, ItemDtoLong> items = itemRepository.findByOwnerId(userId).stream().collect(Collectors.toMap(Item::getId, ItemMapper::toDtoLong));
+    @Transactional(readOnly = true)
+    public List<ItemDtoLong> getAll(long userId, int from, int size) {
+        Map<Long, ItemDtoLong> items = itemRepository.findByOwnerId(userId, PageRequest.of(from / size, size))
+                .stream().collect(Collectors.toMap(Item::getId, ItemMapper::toDtoLong));
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.getPreviousAndNextBookings(new ArrayList<>(items.keySet()), now);
         for (Booking booking : bookings) {
@@ -95,8 +99,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> find(String text) {
-        return (text.isBlank() ? new ArrayList<>() : itemRepository.findAllByDescriptionContainingIgnoreCaseAndAvailableIsTrue(text).stream().map(ItemMapper::toDto).collect(Collectors.toList()));
+    @Transactional(readOnly = true)
+    public List<ItemDto> find(String text, int from, int size) {
+        return (text.isBlank() ? new ArrayList<>() : itemRepository.findAllByDescriptionContainingIgnoreCaseAndAvailableIsTrue(text,
+                PageRequest.of(from / size, size)).stream().map(ItemMapper::toDto).collect(Collectors.toList()));
     }
 
     @Override

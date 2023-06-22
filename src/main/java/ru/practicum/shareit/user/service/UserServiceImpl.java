@@ -33,11 +33,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto get(long userId) {
         return UserMapper.toDto(userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getAll() {
         return userRepository.findAll().stream().map(UserMapper::toDto).collect(Collectors.toList());
     }

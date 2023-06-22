@@ -27,4 +27,6 @@ public class Item {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "owner_id")
     private User owner;
+    @JoinColumn(name = "request_id")
+    private Long requestId;
 }
