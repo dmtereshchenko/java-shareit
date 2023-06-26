@@ -65,10 +65,4 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         }
         return itemRequests.values().stream().collect(Collectors.toList());
     }
-
-    private List<ItemRequestDto> test() {
-        return userRepository.existsById(userId) ? setItemsToRequests(itemRequestRepository.findItemRequestByRequesterId(userId, Sort.by(Sort.Direction.DESC, "created"))
-                .stream().map(ItemRequestMapper::toDto).collect(Collectors.toList()).stream().collect(Collectors.toMap(k -> k.getId(), v -> v))) :
-        throw new UserNotFoundException(userId);
-    }
 }
