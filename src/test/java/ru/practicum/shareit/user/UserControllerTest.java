@@ -74,7 +74,7 @@ public class UserControllerTest {
     @Test
     void updateUserTest() throws Exception {
         UserDto userDto3 = new UserDto(1L, "userUpdateName1", "userUpdateMail1@test.test");
-        when(service.update(userDto3, 1L)).thenReturn(userDto3);
+        when(service.update(any(), anyLong())).thenReturn(userDto3);
         mockMvc.perform(patch("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(mapper.writeValueAsString(userDto3)))

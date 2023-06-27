@@ -54,7 +54,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void ThrowsUserNotFoundExceptionTest() {
+    void throwsUserNotFoundExceptionTest() {
         when(repository.findById(anyLong())).thenThrow(new UserNotFoundException(userDto.getId()));
         assertThrows(UserNotFoundException.class, () -> service.get(userDto.getId()));
     }

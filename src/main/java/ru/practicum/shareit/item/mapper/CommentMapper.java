@@ -15,7 +15,7 @@ public class CommentMapper {
                 commentDto.getText(),
                 item,
                 user,
-                LocalDateTime.now()
+                commentDto.getCreated() != null ? commentDto.getCreated() : LocalDateTime.now()
         );
     }
 
