@@ -140,7 +140,7 @@ public class ItemControllerTest {
         mockMvc.perform(get("/items/search?text=test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(Constant.userId, 1L)
-                        .content(mapper.writeValueAsString(itemDtoLong1)))
+                        .content(mapper.writeValueAsString(items)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemDto1.getId()))
                 .andExpect(jsonPath("$[0].name").value(itemDto1.getName()))
