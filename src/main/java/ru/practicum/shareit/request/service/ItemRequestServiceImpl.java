@@ -37,8 +37,8 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public ItemRequestDto get(long userId, long requestId) {
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
-        return setItemsToRequests(Map.of(requestId, ItemRequestMapper.toDto(itemRequestRepository.findById(requestId).
-                orElseThrow(() -> new ItemRequestNotFoundException(requestId))))).get(0);
+        return setItemsToRequests(Map.of(requestId, ItemRequestMapper.toDto(itemRequestRepository.findById(requestId)
+                .orElseThrow(() -> new ItemRequestNotFoundException(requestId))))).get(0);
     }
 
     @Override

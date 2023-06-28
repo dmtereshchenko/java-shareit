@@ -145,8 +145,8 @@ public class BookingServiceTest {
     @Test
     void getPastByBookerTest() throws InvalidDataException {
         when(userRepository.existsById(anyLong())).thenReturn(true);
-        when(bookingRepository.findBookingsByBookerIdAndEndIsBefore(anyLong(), any(LocalDateTime.class), any(Pageable.class))).
-                thenReturn(List.of(booking));
+        when(bookingRepository.findBookingsByBookerIdAndEndIsBefore(anyLong(), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(booking));
         assertEquals(List.of(bookingDto), service.getAllByBooker("PAST", booker.getId(), 0, 10));
     }
 
@@ -196,8 +196,8 @@ public class BookingServiceTest {
     @Test
     void getPastByOwnerTest() throws InvalidDataException {
         when(userRepository.existsById(anyLong())).thenReturn(true);
-        when(bookingRepository.findBookingsByItemOwnerIdAndEndIsBefore(anyLong(), any(LocalDateTime.class), any(Pageable.class))).
-                thenReturn(List.of(booking));
+        when(bookingRepository.findBookingsByItemOwnerIdAndEndIsBefore(anyLong(), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(booking));
         assertEquals(List.of(bookingDto), service.getAllByOwner("PAST", owner.getId(), 0, 10));
     }
 
