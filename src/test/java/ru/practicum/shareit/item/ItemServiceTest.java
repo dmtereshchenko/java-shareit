@@ -36,6 +36,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ItemServiceTest {
 
+    private final ItemDto itemDto1 = new ItemDto(1L, "itemName1", "itemDescription1", true, 1L);
+    private final ItemDtoLong itemDtoLong1 = new ItemDtoLong(1L, "itemName1", "itemDescription1", true, null, null, new ArrayList<>());
+    User user = new User(1L, "userName", "userMail@test.test");
+    private final Item item = new Item(1L, "itemName1", "itemDescription1", true, user, 1L);
     @Mock
     private ItemRepository itemRepository;
     @Mock
@@ -46,11 +50,6 @@ public class ItemServiceTest {
     private BookingRepository bookingRepository;
     @InjectMocks
     private ItemServiceImpl service;
-
-    User user = new User(1L, "userName", "userMail@test.test");
-    private final Item item = new Item(1L, "itemName1", "itemDescription1", true, user, 1L);
-    private final ItemDto itemDto1 = new ItemDto(1L, "itemName1", "itemDescription1", true, 1L);
-    private final ItemDtoLong itemDtoLong1 = new ItemDtoLong(1L, "itemName1", "itemDescription1", true, null, null, new ArrayList<>());
 
     @Test
     void createItemTest() {

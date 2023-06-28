@@ -20,11 +20,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class BookingRepositoryTest {
 
-    @Mock
-    private BookingRepository bookingRepository;
     private final Booking booking = new Booking(1L, null, null, null, null, null);
     List<Booking> bookings = List.of(booking);
     LocalDateTime now = LocalDateTime.now();
+    @Mock
+    private BookingRepository bookingRepository;
 
     @Test
     void findBookingsByBookerIdTest() {

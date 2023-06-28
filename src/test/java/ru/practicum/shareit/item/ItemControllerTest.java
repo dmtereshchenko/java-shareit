@@ -28,15 +28,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class ItemControllerTest {
 
-    @MockBean
-    private ItemService service;
     private final ObjectMapper mapper;
     private final MockMvc mockMvc;
     private final ItemDto itemDto1 = new ItemDto(1L, "itemName1", "itemDescription1", true, 1L);
     private final ItemDto itemDto2 = new ItemDto(2L, "itemName2", "itemDescription2", true, 2L);
-
     private final ItemDtoLong itemDtoLong1 = new ItemDtoLong(1L, "itemName1", "itemDescription1", true, null, null, null);
     private final ItemDtoLong itemDtoLong2 = new ItemDtoLong(2L, "itemName2", "itemDescription2", true, null, null, null);
+    @MockBean
+    private ItemService service;
 
     @Test
     void createItemTest() throws Exception {

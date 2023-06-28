@@ -17,10 +17,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ItemRepositoryTest {
 
-    @Mock
-    private ItemRepository itemRepository;
     private final Item item = new Item(1L, "itemName1", "itemDescription1", true, null, 1L);
     private final List<Item> items = List.of(item);
+    @Mock
+    private ItemRepository itemRepository;
 
     @Test
     void findByOwnerIdTest() {

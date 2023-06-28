@@ -29,8 +29,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BookingControllerTest {
 
-    @MockBean
-    private BookingService service;
     private final ObjectMapper mapper;
     private final MockMvc mockMvc;
     private final UserDto user = new UserDto(1L, "userName", "userMail@test.test");
@@ -39,6 +37,8 @@ public class BookingControllerTest {
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
     private final BookingDto bookingDto2 = new BookingDto(2L, item.getId(), LocalDateTime.now().plusHours(1),
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
+    @MockBean
+    private BookingService service;
 
     @Test
     void createBookingTest() throws Exception {

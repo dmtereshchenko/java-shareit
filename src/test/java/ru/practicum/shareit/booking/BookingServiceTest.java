@@ -35,6 +35,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class BookingServiceTest {
 
+    private final User owner = new User(1L, "userName", "userMail@test.test");
+    private final User booker = new User(2L, "userName2", "userMail2@test.test");
+    private final Item item = new Item(1L, "itemName", "itemDescription", true, owner, 1L);
+    private final Booking booking = new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
+            item, owner, Status.WAITING);
+    private final BookingDto bookingDto = BookingMapper.toDto(booking);
     @Mock
     private ItemRepository itemRepository;
     @Mock
@@ -43,12 +49,6 @@ public class BookingServiceTest {
     private BookingRepository bookingRepository;
     @InjectMocks
     private BookingServiceImpl service;
-    private final User owner = new User(1L, "userName", "userMail@test.test");
-    private final User booker = new User(2L, "userName2", "userMail2@test.test");
-    private final Item item = new Item(1L, "itemName", "itemDescription", true, owner, 1L);
-    private final Booking booking = new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
-            item, owner, Status.WAITING);
-    private final BookingDto bookingDto = BookingMapper.toDto(booking);
 
     @Test
     void createBookingTest() {

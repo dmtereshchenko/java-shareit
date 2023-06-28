@@ -13,7 +13,7 @@ public class BookingMapper {
 
     public static Booking toBooking(BookingDto bookingDto, User user, Item item) {
         return new Booking(
-                bookingDto.getId() != 0 ? bookingDto.getId() : 0,
+                bookingDto.getId() != null ? bookingDto.getId() : null,
                 bookingDto.getStart() != null ? bookingDto.getStart() : null,
                 bookingDto.getEnd() != null ? bookingDto.getEnd() : null,
                 item,

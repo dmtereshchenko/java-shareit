@@ -25,12 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class UserControllerTest {
 
-    @MockBean
-    private UserService service;
     private final MockMvc mockMvc;
     private final ObjectMapper mapper;
     private final UserDto userDto1 = new UserDto(1L, "userName1", "usermail1@test.test");
     private final UserDto userDto2 = new UserDto(2L, "userName2", "usermail2@test.test");
+    @MockBean
+    private UserService service;
 
     @Test
     void createTest() throws Exception {

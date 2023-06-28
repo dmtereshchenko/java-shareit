@@ -24,12 +24,12 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class UserServiceTest {
 
+    private final UserDto userDto = new UserDto(1L, "userName", "userMail@test.test");
+    private final User user = new User(1L, "userName", "userMail@test.test");
     @Mock
     private UserRepository repository;
     @InjectMocks
     private UserServiceImpl service;
-    private final UserDto userDto = new UserDto(1L, "userName", "userMail@test.test");
-    private final User user = new User(1L, "userName", "userMail@test.test");
 
     @Test
     void createUserTest() {
