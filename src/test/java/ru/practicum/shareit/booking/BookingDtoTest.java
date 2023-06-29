@@ -5,19 +5,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 public class BookingDtoTest {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     @Autowired
     private JacksonTester<BookingDto> json;
 
@@ -37,8 +38,8 @@ public class BookingDtoTest {
         assertThat(result).hasJsonPath("$.booker.name");
         assertThat(result).extractingJsonPathValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathValue("$.itemId").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(bookingDto.getStart().format(Constant.formatter));
-        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(bookingDto.getEnd().format(Constant.formatter));
+        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(bookingDto.getStart().format(formatter));
+        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(bookingDto.getEnd().format(formatter));
         assertThat(result).extractingJsonPathValue("$.booker.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.booker.name").isEqualTo(bookingDto.getBooker().getName());
         assertThat(result).extractingJsonPathStringValue("$.status").isEqualTo(Status.WAITING.name());

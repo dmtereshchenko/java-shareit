@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoLong;
@@ -23,12 +22,12 @@ import java.util.List;
 @RequestMapping(path = "/items")
 public class ItemController {
 
+    private static final String getId = "X-Sharer-User-Id";
     private final ItemService service;
-
 
     @PostMapping()
     ItemDto create(@Valid @RequestBody ItemDto itemDto,
-                   @RequestHeader(Constant.userId) long userId,
+                   @RequestHeader(getId) long userId,
                    HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.create(itemDto, userId);
@@ -36,7 +35,7 @@ public class ItemController {
 
     @PostMapping(value = "/{itemId}/comment")
     CommentDto addComment(@Valid @RequestBody CommentDto commentDto,
-                          @RequestHeader(Constant.userId) long userId,
+                          @RequestHeader(getId) long userId,
                           @PathVariable long itemId,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
@@ -45,7 +44,7 @@ public class ItemController {
 
     @PatchMapping(value = "/{itemId}")
     ItemDto update(@RequestBody ItemDto itemDto,
-                   @RequestHeader(Constant.userId) long userId,
+                   @RequestHeader(getId) long userId,
                    @PathVariable int itemId,
                    HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
@@ -54,14 +53,14 @@ public class ItemController {
 
     @GetMapping(value = "/{itemId}")
     ItemDtoLong get(@PathVariable long itemId,
-                    @RequestHeader(Constant.userId) long userId,
+                    @RequestHeader(getId) long userId,
                     HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.get(itemId, userId);
     }
 
     @GetMapping()
-    List<ItemDtoLong> getAll(@RequestHeader(Constant.userId) long userId,
+    List<ItemDtoLong> getAll(@RequestHeader(getId) long userId,
                              @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                              @RequestParam(defaultValue = "10") @Positive int size,
                              HttpServletRequest request) {

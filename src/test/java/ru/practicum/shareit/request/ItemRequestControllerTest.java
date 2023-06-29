@@ -8,12 +8,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +32,8 @@ public class ItemRequestControllerTest {
     private final MockMvc mockMvc;
     private final ItemRequestDto itemRequestDto1 = new ItemRequestDto(1L, "itemRequestDescription1", LocalDateTime.now(), new ArrayList<>());
     private final ItemRequestDto itemRequestDto2 = new ItemRequestDto(2L, "itemRequestDescription2", LocalDateTime.now(), new ArrayList<>());
+    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private final String getId = "X-Sharer-User-Id";
     @MockBean
     private ItemRequestService service;
 
@@ -40,12 +42,12 @@ public class ItemRequestControllerTest {
         when(service.create(any(), anyLong())).thenReturn(itemRequestDto1);
         mockMvc.perform(post("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(itemRequestDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$.description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$.created").value(itemRequestDto1.getCreated().format(Constant.formatter)))
+                .andExpect(jsonPath("$.created").value(itemRequestDto1.getCreated().format(formatter)))
                 .andExpect(jsonPath("$.items").isEmpty());
     }
 
@@ -54,12 +56,12 @@ public class ItemRequestControllerTest {
         when(service.get(anyLong(), anyLong())).thenReturn(itemRequestDto1);
         mockMvc.perform(get("/requests/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(itemRequestDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$.description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$.created").value(itemRequestDto1.getCreated().format(Constant.formatter)))
+                .andExpect(jsonPath("$.created").value(itemRequestDto1.getCreated().format(formatter)))
                 .andExpect(jsonPath("$.items").isEmpty());
     }
 
@@ -68,16 +70,16 @@ public class ItemRequestControllerTest {
         when(service.getAll(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemRequestDto1, itemRequestDto2));
         mockMvc.perform(get("/requests/all")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(itemRequestDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$[0].description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated().format(Constant.formatter)))
+                .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated().format(formatter)))
                 .andExpect(jsonPath("$[0].items").isEmpty())
                 .andExpect(jsonPath("$[1].id").value(itemRequestDto2.getId()))
                 .andExpect(jsonPath("$[1].description").value(itemRequestDto2.getDescription()))
-                .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated().format(Constant.formatter)))
+                .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated().format(formatter)))
                 .andExpect(jsonPath("$[1].items").isEmpty());
     }
 
@@ -86,16 +88,16 @@ public class ItemRequestControllerTest {
         when(service.getAllByOwner(anyLong())).thenReturn(List.of(itemRequestDto1, itemRequestDto2));
         mockMvc.perform(get("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(itemRequestDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$[0].description").value(itemRequestDto1.getDescription()))
-                .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated().format(Constant.formatter)))
+                .andExpect(jsonPath("$[0].created").value(itemRequestDto1.getCreated().format(formatter)))
                 .andExpect(jsonPath("$[0].items").isEmpty())
                 .andExpect(jsonPath("$[1].id").value(itemRequestDto2.getId()))
                 .andExpect(jsonPath("$[1].description").value(itemRequestDto2.getDescription()))
-                .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated().format(Constant.formatter)))
+                .andExpect(jsonPath("$[1].created").value(itemRequestDto2.getCreated().format(formatter)))
                 .andExpect(jsonPath("$[1].items").isEmpty());
     }
 }

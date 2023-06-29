@@ -5,10 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,6 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @JsonTest
 public class ItemRequestDtoTest {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     @Autowired
     private JacksonTester<ItemRequestDto> json;
 
@@ -29,7 +30,7 @@ public class ItemRequestDtoTest {
         assertThat(result).hasJsonPath("$.items");
         assertThat(result).extractingJsonPathValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(itemRequestDto.getDescription());
-        assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo(itemRequestDto.getCreated().format(Constant.formatter));
+        assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo(itemRequestDto.getCreated().format(formatter));
         assertThat(result).extractingJsonPathValue("$.items").isEqualTo(itemRequestDto.getItems());
     }
 }

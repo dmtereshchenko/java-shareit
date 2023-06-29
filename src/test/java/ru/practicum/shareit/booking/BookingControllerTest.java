@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.model.Status;
@@ -17,6 +16,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -37,6 +37,8 @@ public class BookingControllerTest {
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
     private final BookingDto bookingDto2 = new BookingDto(2L, item.getId(), LocalDateTime.now().plusHours(1),
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
+    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    private final String getId = "X-Sharer-User-Id";
     @MockBean
     private BookingService service;
 
@@ -45,14 +47,14 @@ public class BookingControllerTest {
         when(service.create(any(), anyLong())).thenReturn(bookingDto1);
         mockMvc.perform(post("/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookingDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingDto1.getId()))
                 .andExpect(jsonPath("$.item.id").value(bookingDto1.getItemId()))
                 .andExpect(jsonPath("$.item.name").value(bookingDto1.getItem().getName()))
-                .andExpect(jsonPath("$.start").value(bookingDto1.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$.end").value(bookingDto1.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$.start").value(bookingDto1.getStart().format(formatter)))
+                .andExpect(jsonPath("$.end").value(bookingDto1.getEnd().format(formatter)))
                 .andExpect(jsonPath("$.booker.id").value(bookingDto1.getBooker().getId()))
                 .andExpect(jsonPath("$.booker.name").value(bookingDto1.getBooker().getName()))
                 .andExpect(jsonPath("$.status").value(Status.WAITING.name()));
@@ -63,7 +65,7 @@ public class BookingControllerTest {
         BookingDto bookingDto3 = new BookingDto(1L, null, LocalDateTime.now().plusHours(1),
                 LocalDateTime.now().plusHours(2), null, user, Status.WAITING);
         mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookingDto3)))
                 .andExpect(status().isBadRequest());
     }
@@ -73,7 +75,7 @@ public class BookingControllerTest {
         BookingDto bookingDto3 = new BookingDto(1L, item.getId(), null,
                 LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
         mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookingDto3)))
                 .andExpect(status().isBadRequest());
     }
@@ -83,7 +85,7 @@ public class BookingControllerTest {
         BookingDto bookingDto3 = new BookingDto(1L, item.getId(), LocalDateTime.now().plusHours(1),
                 null, item, user, Status.WAITING);
         mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookingDto3)))
                 .andExpect(status().isBadRequest());
     }
@@ -95,14 +97,14 @@ public class BookingControllerTest {
         when(service.update(anyLong(), anyBoolean(), anyLong())).thenReturn(bookingDto3);
         mockMvc.perform(patch("/bookings/1?approved=true")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookingDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingDto3.getId()))
                 .andExpect(jsonPath("$.item.id").value(bookingDto3.getItemId()))
                 .andExpect(jsonPath("$.item.name").value(bookingDto3.getItem().getName()))
-                .andExpect(jsonPath("$.start").value(bookingDto3.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$.end").value(bookingDto3.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$.start").value(bookingDto3.getStart().format(formatter)))
+                .andExpect(jsonPath("$.end").value(bookingDto3.getEnd().format(formatter)))
                 .andExpect(jsonPath("$.booker.id").value(bookingDto3.getBooker().getId()))
                 .andExpect(jsonPath("$.booker.name").value(bookingDto3.getBooker().getName()))
                 .andExpect(jsonPath("$.status").value(Status.APPROVED.name()));
@@ -113,14 +115,14 @@ public class BookingControllerTest {
         when(service.get(anyLong(), anyLong())).thenReturn(bookingDto1);
         mockMvc.perform(get("/bookings/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookingDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(bookingDto1.getId()))
                 .andExpect(jsonPath("$.item.id").value(bookingDto1.getItemId()))
                 .andExpect(jsonPath("$.item.name").value(bookingDto1.getItem().getName()))
-                .andExpect(jsonPath("$.start").value(bookingDto1.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$.end").value(bookingDto1.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$.start").value(bookingDto1.getStart().format(formatter)))
+                .andExpect(jsonPath("$.end").value(bookingDto1.getEnd().format(formatter)))
                 .andExpect(jsonPath("$.booker.id").value(bookingDto1.getBooker().getId()))
                 .andExpect(jsonPath("$.booker.name").value(bookingDto1.getBooker().getName()))
                 .andExpect(jsonPath("$.status").value(Status.WAITING.name()));
@@ -133,22 +135,22 @@ public class BookingControllerTest {
         System.out.println(bookings);
         mockMvc.perform(get("/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookings)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(bookingDto1.getId()))
                 .andExpect(jsonPath("$[0].item.id").value(bookingDto1.getItemId()))
                 .andExpect(jsonPath("$[0].item.name").value(bookingDto1.getItem().getName()))
-                .andExpect(jsonPath("$[0].start").value(bookingDto1.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$[0].end").value(bookingDto1.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$[0].start").value(bookingDto1.getStart().format(formatter)))
+                .andExpect(jsonPath("$[0].end").value(bookingDto1.getEnd().format(formatter)))
                 .andExpect(jsonPath("$[0].booker.id").value(bookingDto1.getBooker().getId()))
                 .andExpect(jsonPath("$[0].booker.name").value(bookingDto1.getBooker().getName()))
                 .andExpect(jsonPath("$[0].status").value(Status.WAITING.name()))
                 .andExpect(jsonPath("$[1].id").value(bookingDto2.getId()))
                 .andExpect(jsonPath("$[1].item.id").value(bookingDto2.getItemId()))
                 .andExpect(jsonPath("$[1].item.name").value(bookingDto2.getItem().getName()))
-                .andExpect(jsonPath("$[1].start").value(bookingDto2.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$[1].end").value(bookingDto2.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$[1].start").value(bookingDto2.getStart().format(formatter)))
+                .andExpect(jsonPath("$[1].end").value(bookingDto2.getEnd().format(formatter)))
                 .andExpect(jsonPath("$[1].booker.id").value(bookingDto2.getBooker().getId()))
                 .andExpect(jsonPath("$[1].booker.name").value(bookingDto2.getBooker().getName()))
                 .andExpect(jsonPath("$[1].status").value(Status.WAITING.name()));
@@ -161,22 +163,22 @@ public class BookingControllerTest {
         System.out.println(bookings);
         mockMvc.perform(get("/bookings/owner")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header(Constant.userId, 1L)
+                        .header(getId, 1L)
                         .content(mapper.writeValueAsString(bookings)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(bookingDto1.getId()))
                 .andExpect(jsonPath("$[0].item.id").value(bookingDto1.getItemId()))
                 .andExpect(jsonPath("$[0].item.name").value(bookingDto1.getItem().getName()))
-                .andExpect(jsonPath("$[0].start").value(bookingDto1.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$[0].end").value(bookingDto1.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$[0].start").value(bookingDto1.getStart().format(formatter)))
+                .andExpect(jsonPath("$[0].end").value(bookingDto1.getEnd().format(formatter)))
                 .andExpect(jsonPath("$[0].booker.id").value(bookingDto1.getBooker().getId()))
                 .andExpect(jsonPath("$[0].booker.name").value(bookingDto1.getBooker().getName()))
                 .andExpect(jsonPath("$[0].status").value(Status.WAITING.name()))
                 .andExpect(jsonPath("$[1].id").value(bookingDto2.getId()))
                 .andExpect(jsonPath("$[1].item.id").value(bookingDto2.getItemId()))
                 .andExpect(jsonPath("$[1].item.name").value(bookingDto2.getItem().getName()))
-                .andExpect(jsonPath("$[1].start").value(bookingDto2.getStart().format(Constant.formatter)))
-                .andExpect(jsonPath("$[1].end").value(bookingDto2.getEnd().format(Constant.formatter)))
+                .andExpect(jsonPath("$[1].start").value(bookingDto2.getStart().format(formatter)))
+                .andExpect(jsonPath("$[1].end").value(bookingDto2.getEnd().format(formatter)))
                 .andExpect(jsonPath("$[1].booker.id").value(bookingDto2.getBooker().getId()))
                 .andExpect(jsonPath("$[1].booker.name").value(bookingDto2.getBooker().getName()))
                 .andExpect(jsonPath("$[1].status").value(Status.WAITING.name()));

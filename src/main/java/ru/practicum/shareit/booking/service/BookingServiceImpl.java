@@ -3,9 +3,9 @@ package ru.practicum.shareit.booking.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
@@ -79,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
-        Pageable pageable = PageRequest.of(from / size, size, Constant.sortDesc);
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (state) {
             case "ALL":
                 bookings = bookingRepository.findBookingsByBookerId(userId, pageable);
@@ -112,7 +112,7 @@ public class BookingServiceImpl implements BookingService {
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
-        Pageable pageable = PageRequest.of(from / size, size, Constant.sortDesc);
+        Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));
         switch (state) {
             case "ALL":
                 bookings = bookingRepository.findBookingsByItemOwnerId(userId, pageable);

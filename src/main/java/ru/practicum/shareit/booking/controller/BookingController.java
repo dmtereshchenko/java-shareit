@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.exceptions.InvalidDataException;
@@ -22,11 +21,12 @@ import java.util.List;
 @RequestMapping(path = "/bookings")
 public class BookingController {
 
+    private static final String getId = "X-Sharer-User-Id";
     private final BookingService service;
 
     @PostMapping()
     BookingDto create(@Valid @RequestBody BookingDto bookingDto,
-                      @RequestHeader(Constant.userId) long userId,
+                      @RequestHeader(getId) long userId,
                       HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.create(bookingDto, userId);
@@ -35,7 +35,7 @@ public class BookingController {
     @PatchMapping(value = "/{bookingId}")
     BookingDto update(@PathVariable long bookingId,
                       @RequestParam boolean approved,
-                      @RequestHeader(Constant.userId) long userId,
+                      @RequestHeader(getId) long userId,
                       HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.update(bookingId, approved, userId);
@@ -43,7 +43,7 @@ public class BookingController {
 
     @GetMapping(value = "/{bookingId}")
     BookingDto get(@PathVariable long bookingId,
-                   @RequestHeader(Constant.userId) long userId,
+                   @RequestHeader(getId) long userId,
                    HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.get(bookingId, userId);
@@ -51,7 +51,7 @@ public class BookingController {
 
     @GetMapping()
     List<BookingDto> getAllByBooker(@RequestParam(defaultValue = "ALL") String state,
-                                    @RequestHeader(Constant.userId) long userId,
+                                    @RequestHeader(getId) long userId,
                                     @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                     @RequestParam(defaultValue = "10") @Positive int size,
                                     HttpServletRequest request) throws InvalidDataException {
@@ -61,7 +61,7 @@ public class BookingController {
 
     @GetMapping(value = "/owner")
     List<BookingDto> getAllByOwner(@RequestParam(defaultValue = "ALL") String state,
-                                   @RequestHeader(Constant.userId) long userId,
+                                   @RequestHeader(getId) long userId,
                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                    @RequestParam(defaultValue = "10") @Positive int size,
                                    HttpServletRequest request) throws InvalidDataException {

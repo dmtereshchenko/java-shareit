@@ -5,16 +5,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @JsonTest
 public class BookingDtoShortTest {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     @Autowired
     private JacksonTester<BookingDtoShort> json;
 
@@ -28,7 +29,7 @@ public class BookingDtoShortTest {
         assertThat(result).hasJsonPath("$.end");
         assertThat(result).extractingJsonPathValue("$.id").isEqualTo(1);
         assertThat(result).extractingJsonPathValue("$.bookerId").isEqualTo(1);
-        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(bookingDtoShort.getStart().format(Constant.formatter));
-        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(bookingDtoShort.getEnd().format(Constant.formatter));
+        assertThat(result).extractingJsonPathStringValue("$.start").isEqualTo(bookingDtoShort.getStart().format(formatter));
+        assertThat(result).extractingJsonPathStringValue("$.end").isEqualTo(bookingDtoShort.getEnd().format(formatter));
     }
 }

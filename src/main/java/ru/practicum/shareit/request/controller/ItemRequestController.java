@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.Constant;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
@@ -21,18 +20,19 @@ import java.util.List;
 @RequestMapping(path = "/requests")
 public class ItemRequestController {
 
+    private static final String getId = "X-Sharer-User-Id";
     private final ItemRequestService service;
 
     @PostMapping()
     ItemRequestDto create(@Valid @RequestBody ItemRequestDto itemRequestDto,
-                          @RequestHeader(Constant.userId) long userId,
+                          @RequestHeader(getId) long userId,
                           HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.create(itemRequestDto, userId);
     }
 
     @GetMapping("/{requestId}")
-    ItemRequestDto get(@RequestHeader(Constant.userId) long userId,
+    ItemRequestDto get(@RequestHeader(getId) long userId,
                        @PathVariable long requestId,
                        HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
@@ -40,7 +40,7 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    List<ItemRequestDto> getAll(@RequestHeader(Constant.userId) long userId,
+    List<ItemRequestDto> getAll(@RequestHeader(getId) long userId,
                                 @RequestParam(defaultValue = "0") @PositiveOrZero int from,
                                 @RequestParam(defaultValue = "10") @Positive int size,
                                 HttpServletRequest request) {
@@ -49,7 +49,7 @@ public class ItemRequestController {
     }
 
     @GetMapping()
-    List<ItemRequestDto> getAllByOwner(@RequestHeader(Constant.userId) long userId,
+    List<ItemRequestDto> getAllByOwner(@RequestHeader(getId) long userId,
                                        HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.getAllByOwner(userId);
