@@ -8,14 +8,13 @@ import org.springframework.boot.test.json.JsonContent;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.practicum.shareit.Constant.formatter;
 
 @JsonTest
 public class BookingDtoShortTest {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     @Autowired
     private JacksonTester<BookingDtoShort> json;
 

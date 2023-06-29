@@ -6,6 +6,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class ItemRequestMapper {
 
@@ -14,7 +15,7 @@ public class ItemRequestMapper {
                 itemRequestDto.getId(),
                 itemRequestDto.getDescription(),
                 user.getId(),
-                itemRequestDto.getCreated() != null ? itemRequestDto.getCreated() : LocalDateTime.now()
+                Objects.requireNonNullElse(itemRequestDto.getCreated(), LocalDateTime.now())
         );
     }
 

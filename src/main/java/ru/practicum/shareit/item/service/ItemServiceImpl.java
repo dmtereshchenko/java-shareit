@@ -27,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,9 +50,9 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         if (userId != user.getId()) throw new AccessDeniedException("Редактировать вещь может только ее владелец.");
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException(itemId));
-        item.setName(itemDto.getName() != null ? itemDto.getName() : item.getName());
-        item.setDescription(itemDto.getDescription() != null ? itemDto.getDescription() : item.getDescription());
-        item.setAvailable(itemDto.getAvailable() != null ? itemDto.getAvailable() : item.getAvailable());
+        item.setName(Objects.requireNonNullElse(itemDto.getName(), item.getName()));
+        item.setDescription(Objects.requireNonNullElse(itemDto.getDescription(), item.getDescription()));
+        item.setAvailable(Objects.requireNonNullElse(itemDto.getAvailable(), item.getAvailable()));
         return ItemMapper.toDto(itemRepository.save(item));
 
     }

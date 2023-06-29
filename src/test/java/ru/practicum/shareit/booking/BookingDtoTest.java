@@ -11,14 +11,13 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static ru.practicum.shareit.Constant.formatter;
 
 @JsonTest
 public class BookingDtoTest {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
     @Autowired
     private JacksonTester<BookingDto> json;
 

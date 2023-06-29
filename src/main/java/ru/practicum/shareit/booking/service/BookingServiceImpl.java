@@ -76,7 +76,9 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional(readOnly = true)
     public List<BookingDto> getAllByBooker(String state, long userId, int from, int size) throws InvalidDataException {
-        if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
+        if (!userRepository.existsById(userId)) {
+            throw new UserNotFoundException(userId);
+        }
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings;
         Pageable pageable = PageRequest.of(from / size, size, Sort.by(Sort.Direction.DESC, "start"));

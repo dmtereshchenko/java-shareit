@@ -2,9 +2,7 @@ package ru.practicum.shareit.handler;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
-import ru.practicum.shareit.exceptions.AccessDeniedException;
-import ru.practicum.shareit.exceptions.ErrorHandler;
-import ru.practicum.shareit.exceptions.ErrorResponse;
+import ru.practicum.shareit.exceptions.*;
 
 import javax.xml.bind.ValidationException;
 import java.util.NoSuchElementException;
@@ -28,15 +26,15 @@ public class ErrorHandlerTest {
     void handleActionNotFoundExceptionTest() {
         RuntimeException e = new RuntimeException("test");
         ErrorResponse expectedResponse = new ErrorResponse(e.getMessage());
-        ErrorResponse actualResponse = handler.handleAccessDeniedException(new AccessDeniedException("test"));
+        ErrorResponse actualResponse = handler.handleActionNotFoundException(new ActionNotFoundException("test"));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
 
     @Test
     void handleBookingNotFoundExceptionTest() {
-        NoSuchElementException e = new NoSuchElementException("test");
+        NoSuchElementException e = new NoSuchElementException(("Бронирование с id" + 1L + " не найдено."));
         ErrorResponse expectedResponse = new ErrorResponse(e.getMessage());
-        ErrorResponse actualResponse = handler.handleAccessDeniedException(new AccessDeniedException("test"));
+        ErrorResponse actualResponse = handler.handleBookingNotFoundException(new BookingNotFoundException(1L));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
 
@@ -44,31 +42,31 @@ public class ErrorHandlerTest {
     void handleInvalidDataExceptionTest() {
         ValidationException e = new ValidationException("test");
         ErrorResponse expectedResponse = new ErrorResponse(e.getMessage());
-        ErrorResponse actualResponse = handler.handleAccessDeniedException(new AccessDeniedException("test"));
+        ErrorResponse actualResponse = handler.handleInvalidDataException(new InvalidDataException("test"));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
 
     @Test
     void handleItemNotFoundExceptionTest() {
-        NoSuchElementException e = new NoSuchElementException("test");
+        NoSuchElementException e = new NoSuchElementException("Вещь с id" + 1L + " не найдена.");
         ErrorResponse expectedResponse = new ErrorResponse(e.getMessage());
-        ErrorResponse actualResponse = handler.handleAccessDeniedException(new AccessDeniedException("test"));
+        ErrorResponse actualResponse = handler.handleItemNotFoundException(new ItemNotFoundException(1L));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
 
     @Test
     void handleItemRequestNotFoundExceptionTest() {
-        NoSuchElementException e = new NoSuchElementException("test");
+        NoSuchElementException e = new NoSuchElementException("Запрос с id" + 1L + " не найден.");
         ErrorResponse expectedResponse = new ErrorResponse(e.getMessage());
-        ErrorResponse actualResponse = handler.handleAccessDeniedException(new AccessDeniedException("test"));
+        ErrorResponse actualResponse = handler.handleItemRequestNotFoundException(new ItemRequestNotFoundException(1L));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
 
     @Test
     void handleUserNotFoundExceptionTest() {
-        NoSuchElementException e = new NoSuchElementException("test");
+        NoSuchElementException e = new NoSuchElementException("Пользователь с Id " + 1L + " не найден");
         ErrorResponse expectedResponse = new ErrorResponse(e.getMessage());
-        ErrorResponse actualResponse = handler.handleAccessDeniedException(new AccessDeniedException("test"));
+        ErrorResponse actualResponse = handler.handleUserNotFoundException(new UserNotFoundException(1L));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
 }

@@ -5,24 +5,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.json.JsonTest;
 import org.springframework.boot.test.json.JacksonTester;
 import org.springframework.boot.test.json.JsonContent;
+import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static ru.practicum.shareit.Constant.formatter;
 
 @JsonTest
 public class ItemRequestDtoTest {
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "itemRequestDescription", LocalDateTime.now(), new ArrayList<>());
     @Autowired
     private JacksonTester<ItemRequestDto> json;
 
     @Test
     void serializeTest() throws Exception {
-        ItemRequestDto itemRequestDto = new ItemRequestDto(1L, "itemRequestDescription", LocalDateTime.now(), new ArrayList<>());
         JsonContent<ItemRequestDto> result = json.write(itemRequestDto);
         assertThat(result).hasJsonPath("$.id");
         assertThat(result).hasJsonPath("$.description");
@@ -32,5 +34,14 @@ public class ItemRequestDtoTest {
         assertThat(result).extractingJsonPathStringValue("$.description").isEqualTo(itemRequestDto.getDescription());
         assertThat(result).extractingJsonPathStringValue("$.created").isEqualTo(itemRequestDto.getCreated().format(formatter));
         assertThat(result).extractingJsonPathValue("$.items").isEqualTo(itemRequestDto.getItems());
+    }
+
+    @Test
+    void addItemDtoTest() {
+        ItemDto itemDto = new ItemDto(1L, "itemName", "itemDescription", true, itemRequestDto.getId());
+        ItemRequestDto itemRequestDto1 = itemRequestDto;
+        itemRequestDto.addItemDto(itemDto);
+        itemRequestDto1.setItems(List.of(itemDto));
+        assertEquals(itemRequestDto1, itemRequestDto);
     }
 }

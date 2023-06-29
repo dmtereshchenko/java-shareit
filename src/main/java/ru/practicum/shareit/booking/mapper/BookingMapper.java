@@ -13,9 +13,9 @@ public class BookingMapper {
 
     public static Booking toBooking(BookingDto bookingDto, User user, Item item) {
         return new Booking(
-                bookingDto.getId() != null ? bookingDto.getId() : null,
-                bookingDto.getStart() != null ? bookingDto.getStart() : null,
-                bookingDto.getEnd() != null ? bookingDto.getEnd() : null,
+                bookingDto.getId(),
+                bookingDto.getStart(),
+                bookingDto.getEnd(),
                 item,
                 user,
                 Status.WAITING
