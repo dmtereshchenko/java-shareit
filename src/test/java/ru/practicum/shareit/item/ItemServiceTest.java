@@ -11,6 +11,7 @@ import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.storage.BookingRepository;
 import ru.practicum.shareit.exceptions.AccessDeniedException;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoLong;
@@ -40,6 +41,7 @@ public class ItemServiceTest {
     private final ItemDtoLong itemDtoLong1 = new ItemDtoLong(1L, "itemName1", "itemDescription1", true, null, null, new ArrayList<>());
     User user = new User(1L, "userName", "userMail@test.test");
     private final Item item = new Item(1L, "itemName1", "itemDescription1", true, user, 1L);
+    private final CommentDto commentDto = new CommentDto(1L, "text", user.getName(), LocalDateTime.now());
     @Mock
     private ItemRepository itemRepository;
     @Mock
@@ -60,6 +62,11 @@ public class ItemServiceTest {
     }
 
     @Test
+    void createItemUserInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.create(itemDto1, user.getId()));
+    }
+
+    @Test
     void updateItemTest() {
         item.setName("updateName");
         item.setDescription("updateDescription");
@@ -70,16 +77,29 @@ public class ItemServiceTest {
     }
 
     @Test
-    void throwsAccessDeniedExceptionTest() {
+    void updateThrowsAccessDeniedExceptionTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         assertThrows(AccessDeniedException.class, () -> service.update(itemDto1, 2L, item.getId()));
     }
 
     @Test
-    void getItemTest() {
+    void updateThrowsItemNotFoundExceptionTest() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        assertThrows(ItemNotFoundException.class, () -> service.update(itemDto1, user.getId(), 2L));
+    }
+
+    @Test
+    void getItemByOwnerTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         assertEquals(itemDtoLong1, service.get(item.getId(), user.getId()));
+    }
+
+    @Test
+    void getItemByOtherUserTest() {
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        assertEquals(itemDtoLong1, service.get(item.getId(), 2L));
     }
 
     @Test
@@ -96,6 +116,12 @@ public class ItemServiceTest {
     }
 
     @Test
+    void deleteItemTest() {
+        service.delete(item.getId());
+        verify(itemRepository).deleteById(anyLong());
+    }
+
+    @Test
     void findItemsByTextTest() {
         when(itemRepository.findAllByDescriptionContainingIgnoreCaseAndAvailableIsTrue(anyString(), any(Pageable.class)))
                 .thenReturn(new ArrayList<>());
@@ -104,13 +130,25 @@ public class ItemServiceTest {
     }
 
     @Test
+    void findItemsByEmptyTextTest() {
+        assertNotNull(service.find("", 0, 10));
+        assertTrue(service.find("", 0, 10).isEmpty());
+    }
+
+    @Test
     void addCommentTest() {
-        CommentDto commentDto = new CommentDto(1L, "text", user.getName(), LocalDateTime.now());
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
         when(commentRepository.save(any())).thenReturn(CommentMapper.toComment(commentDto, user, item));
         when(bookingRepository.findBookingsByBookerIdAndItemIdAndEndIsBeforeAndStatus(anyLong(), anyLong(), any(LocalDateTime.class), any(Status.class)))
                 .thenReturn(List.of(new Booking()));
         assertEquals(commentDto, service.addComment(commentDto, user.getId(), item.getId()));
+    }
+
+    @Test
+    void addCommentWithoutBookingTest() {
+        when(bookingRepository.findBookingsByBookerIdAndItemIdAndEndIsBeforeAndStatus(anyLong(), anyLong(),
+                any(LocalDateTime.class), any(Status.class))).thenReturn(new ArrayList<>());
+        assertThrows(AccessDeniedException.class, () -> service.addComment(commentDto, user.getId(), item.getId()));
     }
 }
