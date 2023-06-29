@@ -12,10 +12,7 @@ import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.booking.storage.BookingRepository;
-import ru.practicum.shareit.exceptions.AccessDeniedException;
-import ru.practicum.shareit.exceptions.ActionNotFoundException;
-import ru.practicum.shareit.exceptions.BookingNotFoundException;
-import ru.practicum.shareit.exceptions.InvalidDataException;
+import ru.practicum.shareit.exceptions.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.user.model.User;
@@ -39,7 +36,7 @@ public class BookingServiceTest {
     private final User booker = new User(2L, "userName2", "userMail2@test.test");
     private final Item item = new Item(1L, "itemName", "itemDescription", true, owner, 1L);
     private final Booking booking = new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusHours(2),
-            item, owner, Status.WAITING);
+            item, booker, Status.WAITING);
     private final BookingDto bookingDto = BookingMapper.toDto(booking);
     @Mock
     private ItemRepository itemRepository;
@@ -60,6 +57,17 @@ public class BookingServiceTest {
     }
 
     @Test
+    void createBookingThrowsUserNotFoundExceptionTest() {
+        assertThrows(UserNotFoundException.class, () -> service.create(bookingDto, booker.getId()));
+    }
+
+    @Test
+    void createBookingThrowsItemNotFoundException() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+        assertThrows(ItemNotFoundException.class, () -> service.create(bookingDto, booker.getId()));
+    }
+
+    @Test
     void createBookingByOwnerTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(owner));
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -75,11 +83,20 @@ public class BookingServiceTest {
     }
 
     @Test
+    void createBookingWithWrongStartEndTest() {
+        BookingDto bookingDto1 = new BookingDto(2L, 1L, LocalDateTime.now().plusHours(3), LocalDateTime.now().plusHours(1),
+                null, null, Status.WAITING);
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(booker));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        assertThrows(AccessDeniedException.class, () -> service.create(bookingDto1, booker.getId()));
+    }
+
+    @Test
     void updateBookingByOwnerSetApprovedTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         when(bookingRepository.save(any())).thenReturn(booking);
-        Booking booking1 = new Booking(1L, booking.getStart(), booking.getEnd(), item, owner, Status.APPROVED);
+        Booking booking1 = new Booking(1L, booking.getStart(), booking.getEnd(), item, booker, Status.APPROVED);
         assertEquals(BookingMapper.toDto(booking1), service.update(booking.getId(), true, owner.getId()));
         verify(bookingRepository).save(any());
     }
@@ -109,10 +126,23 @@ public class BookingServiceTest {
     }
 
     @Test
+    void updateBookingApprovedByBookerTest() {
+        when(userRepository.existsById(anyLong())).thenReturn(true);
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        assertThrows(ActionNotFoundException.class, () -> service.update(booking.getId(), true, booker.getId()));
+    }
+
+    @Test
     void getBookingTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
         assertEquals(bookingDto, service.get(booking.getId(), owner.getId()));
+    }
+
+    @Test
+    void getBookingByInExistTest() {
+        when(bookingRepository.findById(anyLong())).thenReturn(Optional.of(booking));
+        assertThrows(UserNotFoundException.class, () -> service.get(booking.getId(), 3L));
     }
 
     @Test
@@ -179,6 +209,11 @@ public class BookingServiceTest {
     }
 
     @Test
+    void getAllByBookerInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.getAllByBooker("ALL", 3L, 0, 10));
+    }
+
+    @Test
     void getAllByOwnerTest() throws InvalidDataException {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(bookingRepository.findBookingsByItemOwnerId(anyLong(), any(Pageable.class))).thenReturn(List.of(booking));
@@ -227,5 +262,10 @@ public class BookingServiceTest {
     void getInvalidStateByOwnerTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         assertThrows(InvalidDataException.class, () -> service.getAllByOwner("UNKNOWN STATE", booker.getId(), 0, 10));
+    }
+
+    @Test
+    void getAllByOwnerInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.getAllByOwner("ALL", 3L, 0, 10));
     }
 }

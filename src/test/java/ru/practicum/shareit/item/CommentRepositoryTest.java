@@ -17,9 +17,9 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class CommentRepositoryTest {
 
+    Comment comment = new Comment(1L, "commentText", null, null, LocalDateTime.now());
     @Mock
     private CommentRepository commentRepository;
-    Comment comment = new Comment(1L, "commentText", null, null, LocalDateTime.now());
 
     @Test
     void findCommentsByItemIdTest() {
