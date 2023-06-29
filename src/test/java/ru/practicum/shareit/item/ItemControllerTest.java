@@ -22,6 +22,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.Constant.getId;
 
 @WebMvcTest(controllers = ItemController.class)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -33,7 +34,6 @@ public class ItemControllerTest {
     private final ItemDto itemDto2 = new ItemDto(2L, "itemName2", "itemDescription2", true, 2L);
     private final ItemDtoLong itemDtoLong1 = new ItemDtoLong(1L, "itemName1", "itemDescription1", true, null, null, null);
     private final ItemDtoLong itemDtoLong2 = new ItemDtoLong(2L, "itemName2", "itemDescription2", true, null, null, null);
-    private final String getId = "X-Sharer-User-Id";
     @MockBean
     private ItemService service;
 

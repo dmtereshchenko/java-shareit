@@ -8,6 +8,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import ru.practicum.shareit.exceptions.ItemRequestNotFoundException;
+import ru.practicum.shareit.exceptions.UserNotFoundException;
 import ru.practicum.shareit.item.storage.ItemRepository;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.mapper.ItemRequestMapper;
@@ -39,12 +40,12 @@ public class ItemRequestServiceTest {
     @Mock
     private UserRepository userRepository;
     @Mock
-    private ItemRepository itemRepository;
-    @Mock
     private ItemRequestRepository itemRequestRepository;
+    @Mock
+    private ItemRepository itemRepository;
 
     @Test
-    void createItemRequestDtoTest() {
+    void createItemRequestTest() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRequestRepository.save(any())).thenReturn(itemRequest);
         assertEquals(itemRequestDto, service.create(itemRequestDto, user.getId()));
@@ -52,10 +53,20 @@ public class ItemRequestServiceTest {
     }
 
     @Test
+    void createItemRequestUserInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.create(itemRequestDto, user.getId()));
+    }
+
+    @Test
     void getItemRequestTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
         assertEquals(itemRequestDto, service.get(user.getId(), itemRequest.getId()));
+    }
+
+    @Test
+    void getItemRequestUserInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.get(user.getId(), itemRequest.getId()));
     }
 
     @Test
@@ -70,6 +81,16 @@ public class ItemRequestServiceTest {
         when(itemRequestRepository.findItemRequestsByRequesterIdNotOrderByCreatedDesc(anyLong(), any(Pageable.class)))
                 .thenReturn(List.of(itemRequest));
         assertEquals(List.of(itemRequestDto), service.getAll(user.getId(), 0, 10));
+    }
+
+    @Test
+    void getAllUserInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.getAll(user.getId(), 0, 10));
+    }
+
+    @Test
+    void getAllByOwnerTest() {
+        assertThrows(UserNotFoundException.class, () -> service.getAllByOwner(user.getId()));
     }
 
     @Test

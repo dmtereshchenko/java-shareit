@@ -13,7 +13,6 @@ import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +22,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.Constant.formatter;
+import static ru.practicum.shareit.Constant.getId;
 
 @WebMvcTest(controllers = ItemRequestController.class)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -32,8 +33,6 @@ public class ItemRequestControllerTest {
     private final MockMvc mockMvc;
     private final ItemRequestDto itemRequestDto1 = new ItemRequestDto(1L, "itemRequestDescription1", LocalDateTime.now(), new ArrayList<>());
     private final ItemRequestDto itemRequestDto2 = new ItemRequestDto(2L, "itemRequestDescription2", LocalDateTime.now(), new ArrayList<>());
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    private final String getId = "X-Sharer-User-Id";
     @MockBean
     private ItemRequestService service;
 

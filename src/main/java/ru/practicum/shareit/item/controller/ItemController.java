@@ -15,6 +15,8 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
+import static ru.practicum.shareit.Constant.getId;
+
 @RestController
 @Slf4j
 @Validated
@@ -22,7 +24,6 @@ import java.util.List;
 @RequestMapping(path = "/items")
 public class ItemController {
 
-    private static final String getId = "X-Sharer-User-Id";
     private final ItemService service;
 
     @PostMapping()

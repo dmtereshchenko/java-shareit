@@ -16,7 +16,6 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.*;
@@ -24,6 +23,8 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.practicum.shareit.Constant.formatter;
+import static ru.practicum.shareit.Constant.getId;
 
 @WebMvcTest(controllers = BookingController.class)
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
@@ -37,8 +38,6 @@ public class BookingControllerTest {
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
     private final BookingDto bookingDto2 = new BookingDto(2L, item.getId(), LocalDateTime.now().plusHours(1),
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
-    private final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    private final String getId = "X-Sharer-User-Id";
     @MockBean
     private BookingService service;
 

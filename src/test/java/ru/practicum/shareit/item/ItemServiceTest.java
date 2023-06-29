@@ -89,6 +89,11 @@ public class ItemServiceTest {
     }
 
     @Test
+    void updateByUserInExistTest() {
+        assertThrows(UserNotFoundException.class, () -> service.update(itemDto1, user.getId(), item.getId()));
+    }
+
+    @Test
     void getItemByOwnerTest() {
         when(userRepository.existsById(anyLong())).thenReturn(true);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
@@ -106,6 +111,12 @@ public class ItemServiceTest {
     void throwsItemNotFoundExceptionTest() {
         when(itemRepository.findById(anyLong())).thenThrow(new ItemNotFoundException(item.getId()));
         assertThrows(ItemNotFoundException.class, () -> service.get(item.getId(), user.getId()));
+    }
+
+    @Test
+    void getByUserInExistTest() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
+        assertThrows(UserNotFoundException.class, () -> service.get(item.getId(), user.getId()));
     }
 
     @Test
@@ -150,5 +161,20 @@ public class ItemServiceTest {
         when(bookingRepository.findBookingsByBookerIdAndItemIdAndEndIsBeforeAndStatus(anyLong(), anyLong(),
                 any(LocalDateTime.class), any(Status.class))).thenReturn(new ArrayList<>());
         assertThrows(AccessDeniedException.class, () -> service.addComment(commentDto, user.getId(), item.getId()));
+    }
+
+    @Test
+    void addCommentUserInExistTest() {
+        when(bookingRepository.findBookingsByBookerIdAndItemIdAndEndIsBeforeAndStatus(anyLong(), anyLong(), any(LocalDateTime.class),
+                any(Status.class))).thenReturn(List.of(new Booking()));
+        assertThrows(UserNotFoundException.class, () -> service.addComment(commentDto, user.getId(), item.getId()));
+    }
+
+    @Test
+    void addCommentItemInExistTest() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(bookingRepository.findBookingsByBookerIdAndItemIdAndEndIsBeforeAndStatus(anyLong(), anyLong(), any(LocalDateTime.class),
+                any(Status.class))).thenReturn(List.of(new Booking()));
+        assertThrows(ItemNotFoundException.class, () -> service.addComment(commentDto, user.getId(), item.getId()));
     }
 }

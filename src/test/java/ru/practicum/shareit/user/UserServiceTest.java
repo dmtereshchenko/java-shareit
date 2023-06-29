@@ -14,8 +14,7 @@ import ru.practicum.shareit.user.storage.UserRepository;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -48,6 +47,11 @@ public class UserServiceTest {
     }
 
     @Test
+    void updateInExistUserTest() {
+        assertThrows(UserNotFoundException.class, () -> service.update(userDto, user.getId()));
+    }
+
+    @Test
     void getUserTest() {
         when(repository.findById(anyLong())).thenReturn(Optional.of(user));
         assertEquals(userDto, service.get(user.getId()));
@@ -55,7 +59,6 @@ public class UserServiceTest {
 
     @Test
     void throwsUserNotFoundExceptionTest() {
-        when(repository.findById(anyLong())).thenThrow(new UserNotFoundException(userDto.getId()));
         assertThrows(UserNotFoundException.class, () -> service.get(userDto.getId()));
     }
 
@@ -69,5 +72,11 @@ public class UserServiceTest {
     void deleteUserTest() {
         service.delete(userDto.getId());
         verify(repository).deleteById(anyLong());
+    }
+
+    @Test
+    void existsTest() {
+        when(repository.existsById(anyLong())).thenReturn(true);
+        assertTrue(service.exists(user.getId()));
     }
 }
