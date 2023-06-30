@@ -10,6 +10,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storage.UserRepository;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,17 +28,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto update(UserDto userDto, long userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        user.setName(userDto.getName() != null ? userDto.getName() : user.getName());
-        user.setEmail(userDto.getEmail() != null ? userDto.getEmail() : user.getEmail());
+        user.setName(Objects.requireNonNullElse(userDto.getName(), user.getName()));
+        user.setEmail(Objects.requireNonNullElse(userDto.getEmail(), user.getEmail()));
         return UserMapper.toDto(userRepository.save(user));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public UserDto get(long userId) {
         return UserMapper.toDto(userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId)));
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getAll() {
         return userRepository.findAll().stream().map(UserMapper::toDto).collect(Collectors.toList());
     }

@@ -14,11 +14,11 @@ public interface ItemService {
 
     ItemDtoLong get(long itemId, long userId);
 
-    List<ItemDtoLong> getAll(long userId);
+    List<ItemDtoLong> getAll(long userId, int from, int size);
 
     void delete(long itemId);
 
-    List<ItemDto> find(String text);
+    List<ItemDto> find(String text, int from, int size);
 
     CommentDto addComment(CommentDto commentDto, long userId, long itemId);
 }

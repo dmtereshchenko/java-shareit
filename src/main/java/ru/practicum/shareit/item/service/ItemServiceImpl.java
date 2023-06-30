@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.mapper.BookingMapper;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,14 +50,15 @@ public class ItemServiceImpl implements ItemService {
         User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
         if (userId != user.getId()) throw new AccessDeniedException("Редактировать вещь может только ее владелец.");
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException(itemId));
-        item.setName(itemDto.getName() != null ? itemDto.getName() : item.getName());
-        item.setDescription(itemDto.getDescription() != null ? itemDto.getDescription() : item.getDescription());
-        item.setAvailable(itemDto.getAvailable() != null ? itemDto.getAvailable() : item.getAvailable());
+        item.setName(Objects.requireNonNullElse(itemDto.getName(), item.getName()));
+        item.setDescription(Objects.requireNonNullElse(itemDto.getDescription(), item.getDescription()));
+        item.setAvailable(Objects.requireNonNullElse(itemDto.getAvailable(), item.getAvailable()));
         return ItemMapper.toDto(itemRepository.save(item));
 
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemDtoLong get(long itemId, long userId) {
         Item item = itemRepository.findById(itemId).orElseThrow(() -> new ItemNotFoundException(itemId));
         if (!userRepository.existsById(userId)) throw new UserNotFoundException(userId);
@@ -75,8 +78,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoLong> getAll(long userId) {
-        Map<Long, ItemDtoLong> items = itemRepository.findByOwnerId(userId).stream().collect(Collectors.toMap(Item::getId, ItemMapper::toDtoLong));
+    @Transactional(readOnly = true)
+    public List<ItemDtoLong> getAll(long userId, int from, int size) {
+        Map<Long, ItemDtoLong> items = itemRepository.findByOwnerId(userId, PageRequest.of(from / size, size))
+                .stream().collect(Collectors.toMap(Item::getId, ItemMapper::toDtoLong));
         LocalDateTime now = LocalDateTime.now();
         List<Booking> bookings = bookingRepository.getPreviousAndNextBookings(new ArrayList<>(items.keySet()), now);
         for (Booking booking : bookings) {
@@ -95,8 +100,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> find(String text) {
-        return (text.isBlank() ? new ArrayList<>() : itemRepository.findAllByDescriptionContainingIgnoreCaseAndAvailableIsTrue(text).stream().map(ItemMapper::toDto).collect(Collectors.toList()));
+    @Transactional(readOnly = true)
+    public List<ItemDto> find(String text, int from, int size) {
+        return (text.isBlank() ? new ArrayList<>() : itemRepository.findAllByDescriptionContainingIgnoreCaseAndAvailableIsTrue(text,
+                PageRequest.of(from / size, size)).stream().map(ItemMapper::toDto).collect(Collectors.toList()));
     }
 
     @Override

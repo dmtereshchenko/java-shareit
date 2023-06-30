@@ -13,7 +13,7 @@ public interface BookingService {
 
     BookingDto get(long bookingId, long userId);
 
-    List<BookingDto> getAllByBooker(String state, long userId) throws InvalidDataException;
+    List<BookingDto> getAllByBooker(String state, long userId, int from, int size) throws InvalidDataException;
 
-    List<BookingDto> getAllByOwner(String state, long userId) throws InvalidDataException;
+    List<BookingDto> getAllByOwner(String state, long userId, int from, int size) throws InvalidDataException;
 }

@@ -19,19 +19,23 @@ public class UserController {
     private final UserService service;
 
     @PostMapping()
-    UserDto create(@Valid @RequestBody UserDto userDto, HttpServletRequest request) {
+    UserDto create(@Valid @RequestBody UserDto userDto,
+                   HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.create(userDto);
     }
 
     @PatchMapping(value = "/{id}")
-    UserDto update(@RequestBody UserDto userDto, @PathVariable long id, HttpServletRequest request) {
+    UserDto update(@RequestBody UserDto userDto,
+                   @PathVariable long id,
+                   HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.update(userDto, id);
     }
 
     @GetMapping(value = "/{id}")
-    UserDto get(@PathVariable long id, HttpServletRequest request) {
+    UserDto get(@PathVariable long id,
+                HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         return service.get(id);
     }
@@ -43,7 +47,8 @@ public class UserController {
     }
 
     @DeleteMapping(value = "/{id}")
-    void delete(@PathVariable long id, HttpServletRequest request) {
+    void delete(@PathVariable long id,
+                HttpServletRequest request) {
         log.info("Получен запрос к эндпоинту: {}, Строка параметров запроса: {}", request.getRequestURI(), request.getQueryString());
         service.delete(id);
     }

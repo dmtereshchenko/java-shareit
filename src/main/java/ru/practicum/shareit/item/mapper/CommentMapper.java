@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class CommentMapper {
 
@@ -15,7 +16,7 @@ public class CommentMapper {
                 commentDto.getText(),
                 item,
                 user,
-                LocalDateTime.now()
+                Objects.requireNonNullElse(commentDto.getCreated(), LocalDateTime.now())
         );
     }
 
