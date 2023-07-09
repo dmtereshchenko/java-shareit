@@ -7,15 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.item.controller.ItemController;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoLong;
-import ru.practicum.shareit.item.service.ItemService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -35,11 +35,11 @@ public class ItemControllerTest {
     private final ItemDtoLong itemDtoLong1 = new ItemDtoLong(1L, "itemName1", "itemDescription1", true, null, null, null);
     private final ItemDtoLong itemDtoLong2 = new ItemDtoLong(2L, "itemName2", "itemDescription2", true, null, null, null);
     @MockBean
-    private ItemService service;
+    private ItemClient client;
 
     @Test
     void createItemTest() throws Exception {
-        when(service.create(any(), anyLong())).thenReturn(itemDto1);
+        when(client.create(anyLong(), any())).thenReturn(ResponseEntity.of(Optional.of(itemDto1)));
         mockMvc.perform(post("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -54,9 +54,39 @@ public class ItemControllerTest {
     }
 
     @Test
+    void createEmptyItemNameTest() throws Exception {
+        ItemDto itemDto3 = new ItemDto(3L, "", "itemDescription3", true, 3L);
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(getId, 1L)
+                        .content(mapper.writeValueAsString(itemDto3)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createEmptyDescriptionTest() throws Exception {
+        ItemDto itemDto3 = new ItemDto(3L, "itemName3", "", true, 3L);
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(getId, 1L)
+                        .content(mapper.writeValueAsString(itemDto3)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createEmptyAvailableTest() throws Exception {
+        ItemDto itemDto3 = new ItemDto(3L, "itemName3", "itemDescription3", null, 3L);
+        mockMvc.perform(post("/items")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header(getId, 1L)
+                        .content(mapper.writeValueAsString(itemDto3)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void updateItemTest() throws Exception {
         ItemDto itemDto3 = new ItemDto(1L, "itemNameUpdate", "itemDescriptionUpdate", true, 1L);
-        when(service.update(any(), anyLong(), anyLong())).thenReturn(itemDto3);
+        when(client.update(anyLong(), anyLong(), any())).thenReturn(ResponseEntity.of(Optional.of(itemDto3)));
         mockMvc.perform(patch("/items/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -71,7 +101,7 @@ public class ItemControllerTest {
 
     @Test
     void getItemTest() throws Exception {
-        when(service.get(anyLong(), anyLong())).thenReturn(itemDtoLong1);
+        when(client.get(anyLong(), anyLong())).thenReturn(ResponseEntity.of(Optional.of(itemDtoLong1)));
         mockMvc.perform(get("/items/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -86,13 +116,11 @@ public class ItemControllerTest {
     @Test
     void getAllItemsTest() throws Exception {
         List<ItemDtoLong> items = List.of(itemDtoLong1, itemDtoLong2);
-        when(service.getAll(anyLong(), anyInt(), anyInt())).thenReturn(items);
+        when(client.getAll(anyLong(), anyInt(), anyInt())).thenReturn(ResponseEntity.of(Optional.of(items)));
         mockMvc.perform(get("/items")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
-                        .content(mapper.writeValueAsString(itemDtoLong1))
-                        .param("from", "0")
-                        .param("size", "10"))
+                        .content(mapper.writeValueAsString(itemDtoLong1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemDtoLong1.getId()))
                 .andExpect(jsonPath("$[0].name").value(itemDtoLong1.getName()))
@@ -107,13 +135,11 @@ public class ItemControllerTest {
     @Test
     void findItemsByTextTest() throws Exception {
         List<ItemDto> items = List.of(itemDto1, itemDto2);
-        when(service.find(anyString(), anyInt(), anyInt())).thenReturn(items);
+        when(client.find(anyLong(), anyInt(), anyInt(), anyString())).thenReturn(ResponseEntity.of(Optional.of(items)));
         mockMvc.perform(get("/items/search?text=test")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
-                        .content(mapper.writeValueAsString(items))
-                        .param("from", "0")
-                        .param("size", "10"))
+                        .content(mapper.writeValueAsString(items)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemDto1.getId()))
                 .andExpect(jsonPath("$[0].name").value(itemDto1.getName()))
@@ -130,7 +156,7 @@ public class ItemControllerTest {
     @Test
     void addCommentTest() throws Exception {
         CommentDto commentDto = new CommentDto(1L, "commentText", "authorName", LocalDateTime.now());
-        when(service.addComment(any(), anyLong(), anyLong())).thenReturn(commentDto);
+        when(client.addComment(anyLong(), anyLong(), any())).thenReturn(ResponseEntity.of(Optional.of(commentDto)));
         mockMvc.perform(post("/items/1/comment")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)

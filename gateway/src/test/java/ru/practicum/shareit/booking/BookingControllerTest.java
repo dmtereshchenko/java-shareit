@@ -7,17 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.booking.controller.BookingController;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.booking.dto.Status;
-import ru.practicum.shareit.booking.service.BookingService;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -40,11 +40,11 @@ public class BookingControllerTest {
     private final BookingDto bookingDto2 = new BookingDto(2L, item.getId(), LocalDateTime.now().plusHours(1),
             LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
     @MockBean
-    private BookingService service;
+    private BookingClient client;
 
     @Test
     void createBookingTest() throws Exception {
-        when(service.create(any(), anyLong())).thenReturn(bookingDto1);
+        when(client.create(anyLong(), any())).thenReturn(ResponseEntity.of(Optional.of(bookingDto1)));
         mockMvc.perform(post("/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -61,10 +61,40 @@ public class BookingControllerTest {
     }
 
     @Test
+    void createBookingEmptyItemIdTest() throws Exception {
+        BookingDto bookingDto3 = new BookingDto(1L, null, LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(2), null, user, Status.WAITING);
+        mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
+                        .header(getId, 1L)
+                        .content(mapper.writeValueAsString(bookingDto3)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createBookingEmptyStartTest() throws Exception {
+        BookingDto bookingDto3 = new BookingDto(1L, item.getId(), null,
+                LocalDateTime.now().plusHours(2), item, user, Status.WAITING);
+        mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
+                        .header(getId, 1L)
+                        .content(mapper.writeValueAsString(bookingDto3)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void createBookingEmptyEndTest() throws Exception {
+        BookingDto bookingDto3 = new BookingDto(1L, item.getId(), LocalDateTime.now().plusHours(1),
+                null, item, user, Status.WAITING);
+        mockMvc.perform(post("/bookings").contentType(MediaType.APPLICATION_JSON)
+                        .header(getId, 1L)
+                        .content(mapper.writeValueAsString(bookingDto3)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
     void updateBookingTest() throws Exception {
         BookingDto bookingDto3 = new BookingDto(1L, item.getId(), LocalDateTime.now().plusHours(1),
                 LocalDateTime.now().plusHours(2), item, user, Status.APPROVED);
-        when(service.update(anyLong(), anyBoolean(), anyLong())).thenReturn(bookingDto3);
+        when(client.update(anyBoolean(), anyLong(), anyLong())).thenReturn(ResponseEntity.of(Optional.of(bookingDto3)));
         mockMvc.perform(patch("/bookings/1?approved=true")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -82,7 +112,7 @@ public class BookingControllerTest {
 
     @Test
     void getBookingTest() throws Exception {
-        when(service.get(anyLong(), anyLong())).thenReturn(bookingDto1);
+        when(client.get(anyLong(), anyLong())).thenReturn(ResponseEntity.of(Optional.of(bookingDto1)));
         mockMvc.perform(get("/bookings/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -101,14 +131,12 @@ public class BookingControllerTest {
     @Test
     void getAllByBookerTest() throws Exception {
         List<BookingDto> bookings = List.of(bookingDto1, bookingDto2);
-        when(service.getAllByBooker(anyString(), anyLong(), anyInt(), anyInt())).thenReturn(bookings);
+        when(client.getAllByBooker(any(BookingState.class), anyLong(), anyInt(), anyInt())).thenReturn(ResponseEntity.of(Optional.of(bookings)));
+        System.out.println(bookings);
         mockMvc.perform(get("/bookings")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
-                        .content(mapper.writeValueAsString(bookings))
-                        .param("state", "ALL")
-                        .param("from", "0")
-                        .param("size", "10"))
+                        .content(mapper.writeValueAsString(bookings)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(bookingDto1.getId()))
                 .andExpect(jsonPath("$[0].item.id").value(bookingDto1.getItemId()))
@@ -131,14 +159,12 @@ public class BookingControllerTest {
     @Test
     void getAllByOwnerTest() throws Exception {
         List<BookingDto> bookings = List.of(bookingDto1, bookingDto2);
-        when(service.getAllByOwner(anyString(), anyLong(), anyInt(), anyInt())).thenReturn(bookings);
+        when(client.getAllByOwner(any(BookingState.class), anyLong(), anyInt(), anyInt())).thenReturn(ResponseEntity.of(Optional.of(bookings)));
+        System.out.println(bookings);
         mockMvc.perform(get("/bookings/owner")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
-                        .content(mapper.writeValueAsString(bookings))
-                        .param("state", "ALL")
-                        .param("from", "0")
-                        .param("size", "10"))
+                        .content(mapper.writeValueAsString(bookings)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(bookingDto1.getId()))
                 .andExpect(jsonPath("$[0].item.id").value(bookingDto1.getItemId()))

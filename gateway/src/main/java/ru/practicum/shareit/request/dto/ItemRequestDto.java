@@ -17,8 +17,4 @@ public class ItemRequestDto {
     private final String description;
     private final LocalDateTime created;
     private List<ItemDto> items;
-
-    public void addItemDto(ItemDto itemDto) {
-        items.add(itemDto);
-    }
 }

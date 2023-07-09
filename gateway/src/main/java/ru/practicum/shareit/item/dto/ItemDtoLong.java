@@ -17,8 +17,4 @@ public class ItemDtoLong {
     private BookingDtoShort lastBooking;
     private BookingDtoShort nextBooking;
     private List<CommentDto> comments;
-
-    public void addComment(CommentDto commentDto) {
-        comments.add(commentDto);
-    }
 }

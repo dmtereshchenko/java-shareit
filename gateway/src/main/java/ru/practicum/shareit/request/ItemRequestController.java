@@ -24,7 +24,8 @@ public class ItemRequestController {
     private final ItemRequestClient client;
 
     @PostMapping
-    ResponseEntity<Object> create(@Valid @RequestBody ItemRequestDto itemRequestDto, @RequestHeader(getId) long userId) {
+    ResponseEntity<Object> create(@Valid @RequestBody ItemRequestDto itemRequestDto,
+                                  @RequestHeader(getId) long userId) {
         log.info("Получен запрос POST /requests/ от пользователя {}", userId);
         return client.create(itemRequestDto, userId);
     }

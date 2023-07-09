@@ -7,14 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.practicum.shareit.request.controller.ItemRequestController;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.service.ItemRequestService;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
@@ -34,11 +34,11 @@ public class ItemRequestControllerTest {
     private final ItemRequestDto itemRequestDto1 = new ItemRequestDto(1L, "itemRequestDescription1", LocalDateTime.now(), new ArrayList<>());
     private final ItemRequestDto itemRequestDto2 = new ItemRequestDto(2L, "itemRequestDescription2", LocalDateTime.now(), new ArrayList<>());
     @MockBean
-    private ItemRequestService service;
+    private ItemRequestClient client;
 
     @Test
     void createItemRequestTest() throws Exception {
-        when(service.create(any(), anyLong())).thenReturn(itemRequestDto1);
+        when(client.create(any(), anyLong())).thenReturn(ResponseEntity.of(Optional.of(itemRequestDto1)));
         mockMvc.perform(post("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -52,7 +52,7 @@ public class ItemRequestControllerTest {
 
     @Test
     void getRequestTest() throws Exception {
-        when(service.get(anyLong(), anyLong())).thenReturn(itemRequestDto1);
+        when(client.get(anyLong(), anyLong())).thenReturn(ResponseEntity.of(Optional.of(itemRequestDto1)));
         mockMvc.perform(get("/requests/1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
@@ -66,13 +66,11 @@ public class ItemRequestControllerTest {
 
     @Test
     void getAllTest() throws Exception {
-        when(service.getAll(anyLong(), anyInt(), anyInt())).thenReturn(List.of(itemRequestDto1, itemRequestDto2));
+        when(client.getAll(anyLong(), anyInt(), anyInt())).thenReturn(ResponseEntity.of(Optional.of(List.of(itemRequestDto1, itemRequestDto2))));
         mockMvc.perform(get("/requests/all")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
-                        .content(mapper.writeValueAsString(itemRequestDto1))
-                        .param("from", "0")
-                        .param("size", "10"))
+                        .content(mapper.writeValueAsString(itemRequestDto1)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[0].id").value(itemRequestDto1.getId()))
                 .andExpect(jsonPath("$[0].description").value(itemRequestDto1.getDescription()))
@@ -86,7 +84,7 @@ public class ItemRequestControllerTest {
 
     @Test
     void getAllByOwnerTest() throws Exception {
-        when(service.getAllByOwner(anyLong())).thenReturn(List.of(itemRequestDto1, itemRequestDto2));
+        when(client.getAllByOwner(anyLong())).thenReturn(ResponseEntity.of(Optional.of(List.of(itemRequestDto1, itemRequestDto2))));
         mockMvc.perform(get("/requests")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(getId, 1L)
