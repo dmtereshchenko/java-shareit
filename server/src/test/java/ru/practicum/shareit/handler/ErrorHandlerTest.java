@@ -69,4 +69,12 @@ public class ErrorHandlerTest {
         ErrorResponse actualResponse = handler.handleUserNotFoundException(new UserNotFoundException(1L));
         assertEquals(actualResponse.getError(), expectedResponse.getError());
     }
+
+    @Test
+    void handleThrowableTest() {
+        Throwable t = new Throwable("test");
+        ErrorResponse expectedResponse = new ErrorResponse(t.getMessage());
+        ErrorResponse actualResponse = handler.handleThrowable(new Throwable("test"));
+        assertEquals(actualResponse.getError(), expectedResponse.getError());
+    }
 }

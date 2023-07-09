@@ -58,4 +58,11 @@ public class ErrorHandler {
         log.warn(e.getMessage());
         return new ErrorResponse(e.getMessage());
     }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public ErrorResponse handleThrowable(Throwable t) {
+        log.warn(t.getMessage());
+        return new ErrorResponse(t.getMessage());
+    }
 }
