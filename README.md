@@ -1,7 +1,9 @@
 # java-shareit
+
 Template repository for Shareit project.
 
 Сервис для шеринга вещей, в котором пользователи могут:
+
 1) регистрироваться и обновлять свою информацию
 2) размещать свои вещи, которые они хотят сдать в аренду
 3) просматривать вещи других пользователей
@@ -11,4 +13,5 @@ Template repository for Shareit project.
 7) оставлять запросы на вещи, которые нужны пользователям
 8) реагировать на запросы чужих пользователей
 
-Стек: Java 11+, Spring Boot, Maven, Lombok, SQL, взаимодействие с H2 Database с помощью фреймфорка Hibernate через Spring JPA.
+Стек: Java 11+, Spring Boot, Maven, Lombok, SQL, взаимодействие с H2 Database с помощью фреймфорка Hibernate через
+Spring JPA.
